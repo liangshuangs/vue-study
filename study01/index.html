@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app" style="color:red;background: gren;">
+        <span class="ab">测试</span>
+        {{name}}
+    </div>
+    <script src="dist/bundle.js"></script>
+    <script>
+        // options Api 通过一个选项进行配置
+        let vm = new Vue({
+            el: '#app',
+            data() {
+                return { 
+                    arr: [[1,2,3]],
+                    name: 'ceshi',
+                    age: {
+                        n: 11
+                    },
+                    school: '测试'
+                 }
+            },
+            watch: {
+                name(newVal, oldVal) {
+                    console.log(newVal,'newVal')
+                },
+                // 'age.n'(newVal, oldVal) {
+                //     console.log(newVal, 'age.n')
+                // },
+                // school: [
+                //     function(newVal) {
+                //         console.log(newVal,'school1')
+                //     },
+                //     function(newVal) {
+                //         console.log(newVal,'school2')
+                //     }
+                // ]
+            }
+        });
+
+        setTimeout(() => {
+            vm.name = 'test2';
+            // vm.age = 13;
+            // console.log(vm.age,'vm.age')
+            // vm.age = 14;
+           // vm.arr[0].push([12])
+            // vm._update(vm._render()); // 重新render 更新视图
+        }, 3000)
+       
+        // 默认弄个数据会递归去用defineProperty进行拦截，性能差 -》 proxy
+        // 我们开发功能时很少对数组索引进行操作,为了性能考虑不对数组进行拦截 
+        // 拦截可以改变数组的方法进行操作
+
+        // 渲染的操作 1） 默认会先找render方法  2) 默认没有传入render方法会查找template  3) 找当前el指定的元素中的内容来进行渲染
+        // ast解析template =》 render函数
+
+        /**
+         * vue 不要嵌套太深，否则会有大量递归
+        vue 对象通过defineProprey实现响应式，拦截了get 和set 如果不存在的属性，则不会被拦截
+        也不会响应，可以使用$set 让对象自己去notice
+        vue 中的数组索引和长度发生变化，不会跟新视图
+        */
+    </script>
+</body>
+
+</html>

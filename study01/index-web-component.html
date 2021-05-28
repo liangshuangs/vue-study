@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>web-component</title>
+</head>
+<body>
+    <test-button type="primary">测试按钮</test-button>
+    <test-button>测试按钮</test-button>
+    <template id="button">
+        <button class="test-button">
+            <slot>默认按钮</slot>
+        </button>
+    </template>
+</body>
+<script>
+    class testButton extends HTMLElement {
+        constructor() {
+            super();
+            this.init();
+        }
+        init() {
+            let shadow = this.attachShadow({mode: 'open'});
+            let templ = document.getElementById('button');
+            let cloneTemplate = templ.content.cloneNode(true);
+            let style = document.createElement('style');
+            let type = this.getAttribute('type') || 'default';
+            let types = {
+                'primary': {
+                    backgroundColor:'#409eff',
+                    color:'#fff'
+                },
+                'default': {
+                    backgroundColor:'#c8c9cc',
+                    color:'#fff'
+                }
+            }
+            style.innerHTML = `
+            .test-button {
+                outline:none;
+                border:none;
+                border-radius:6px;
+                display:inline-block;
+                cursor:pointer;
+                padding:6px 20px;
+                color: ${types[type].color};
+                background: ${types[type].backgroundColor};
+        `
+            shadow.appendChild(style);
+            shadow.appendChild(cloneTemplate);
+        }
+    }
+    window.customElements.define('test-button',testButton)
+</script>
+</html>

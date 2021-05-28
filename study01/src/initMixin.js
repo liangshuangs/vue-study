@@ -1,7 +1,7 @@
 import { initState } from './initState';
 import { complierToFunctions } from './complier';
 import { mountComponent } from './lifecyle';
-import { initWatch } from './stateMixin';
+import { initWatch, initComputed } from './stateMixin';
 function initMixin(Vue) {
     Vue.prototype._init = function (options) {
         const vm = this;
@@ -11,6 +11,9 @@ function initMixin(Vue) {
         }
         if (options.watch) {
             initWatch(vm, options.watch);
+        }
+        if (options.computed) {
+            initComputed(vm, options.computed);
         }
         if (vm.$options.el) {
             vm.$mounted(vm.$options.el);

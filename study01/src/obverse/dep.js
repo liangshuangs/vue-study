@@ -5,7 +5,7 @@ export class Dep {
         this.watchers = [];
     }
     depend() {
-        Dep.target.addDep(this);
+        Dep.target.addDep(this); // watcher 里面记录dep实例
     }
     addWatcher(watcher) {
         this.watchers.push(watcher);
@@ -17,9 +17,13 @@ export class Dep {
     }
 }
 Dep.target = null;
+let stack = [];
 export function pushTarget(watcher) {
     Dep.target = watcher;
+    stack.push(watcher);
+    console.log(watcher,'watcher')
 }
 export function popTarget() {
-    Dep.target = null;
+    stack.pop();
+    Dep.target = stack[stack.length - 1];
 }

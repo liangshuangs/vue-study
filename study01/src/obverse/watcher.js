@@ -1,4 +1,4 @@
-import { pushTarget, popTarget } from './dep';
+import { pushTarget, popTarget, Dep } from './dep';
 import { queueWatcher } from './schedular';
 let id = 0;
 class Watcher {
@@ -8,6 +8,8 @@ class Watcher {
         this.cb = cb;
         this.user = !!options.user;
         this.options = options;
+        this.lanzy = !!options.lanzy; // 是否是computed watcher
+        this.dirty = !!options.lanzy; // computed watcher 默认true dirty:true 取值 false 不取值
         if (typeof expOrFn === 'string') {
             this.getter = function () {
                 return vm[expOrFn];
@@ -19,18 +21,32 @@ class Watcher {
         this.depIds = new Set();
         this.id = id++;
         // 默认会渲染一次组件 因为第一次new组件时，需要挂载组件
-        this.value = this.get(); // 第一次渲染的值 即 旧值
+        this.value = !this.lanzy && this.get(); // 第一次渲染的值 即 旧值 computed watcher 第一次渲染不会进行取值
     }
     get() {
         pushTarget(this);
-        let value = this.getter(); // 即调用 vm._update(vm._render());会触发取vm的上的值的方法 
+        let value = this.getter.call(this.vm); // 即调用 vm._update(vm._render());会触发取vm的上的值的方法 
         popTarget();
+        //stack 1:渲染watcher 2：computed watcher popTarget之后，Dep.target就是渲染watcher了
+        if (Dep.target) {
+            this.depend();
+        }
         return value;
     }
     update() {
         // 将更新放到 queueWatcher里的setTimerout执行 由于setTimerout是异步的，会先把同步先执行完（比如更改vm.data就是同步的操作），再执行异步的方法
-        queueWatcher(this);
+        if (this.lanzy) { // computed 依赖更新时，把 dirty设置为true 及重新计算computed
+            this.dirty = true;
+        } else {
+            queueWatcher(this);
+        }
     }
+    // cmpunted更新
+    evealue() {
+        this.dirty = false;
+        this.value = this.get();
+    }
+    // watch 更新
     run() {
         // 更新时
         let newValue = this.get();
@@ -45,9 +61,15 @@ class Watcher {
         if (!this.depIds.has(id)) {
             this.depIds.add(id);
             this.deps.push(dep);
-            dep.addWatcher(this);
+            dep.addWatcher(this); // dep 里面记录watcher实例
         }
 
+    }
+    depend() {
+        let i = this.deps.length;
+        while (i--) {
+            this.deps[i].depend(); // watcher 里面记录dep实例
+        }
     }
 }
 // watcher dep 

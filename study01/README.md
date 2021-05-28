@@ -76,7 +76,9 @@ Vue.prototype._init = function (options) {
 }
 ```
 3. 在initComputed方法中，主要是做了两件事，一是new Watcher一个实例，另外一件事是代理computed的key到vm上，这样就可以用vm.fullName直接取fullName的值了，就是definedComputed()
+
 第一件事，实例化一个Watcher；
+
 ```
 export function initComputed(vm, computed) {
     let watchers = vm._computedWatcher = {};
@@ -252,98 +254,3 @@ depend() {
     }
 ```
 此时这个this就是computed watcher,里面存放的firstName和lastName的dep,dep里面执行depend，即把watcher就是渲染watcher存到了dep里面去了，当这个firstName更新时，就是执行dep里面的watcher，里面及有渲染watcher,那么页面就会更新了。
-
-
-
-
-
-
-
-
-
-
-
-
-
-计算属性默认不执行，多次取值，如果依赖的值不变，就不会重新执行；依赖的值变化了，需要重新执行
-dirty 表示这个值是不是脏的，默认是true，取完值后改为false,依赖值改变了再改变dirty为true
-计算属性其实也是一个watcher
-需要将computed的key挂载到vue实例上
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-```
-<div id="app" style="color:red;background: gren;">
-  <span class="ab">测试</span>
-  {{fullName}}
-</div>
-
-computed: {
-  fullName() {
-    return this.firstName + this.lastName;
-  },
-  // fullName: {
-  //     get() {
-  //         return this.firstName + this.lastName;
-  //     },
-  //     set(newVal) {
-  //         console.log('new', newVal)
-  //     }
-  // }
-}  
-
-setTimeout(() => {
-  vm.firstName = 'wang'
-}, 3000)
-```
-fullName取值时，直接是去vm上的值，并没有进行属性监听，所以没有收集到渲染watcher
-```
-// 初始化计算属性
-export function initComputed(vm, computed) {
-    for (let key in computed) {
-        console.log(key,'key')
-        let userDef = computed[key];
-        let getter = typeof userDef === 'function' ? userDef : userDef.get;
-        // 创建一个watcher
-        // new Watcher(this, getter, () => { }, { lanzy: true });
-        // 将key挂载到vm上
-        definedComputed(vm, key, userDef);
-    }
-}
-function definedComputed(vm, key, userDef) {
-    let sharedPropery = {};
-    if (typeof userDef === 'function') {
-        sharedPropery.get = userDef;
-    } else {
-        sharedPropery.get = userDef.get;
-        sharedPropery.set = userDef.set;
-    }
-    Object.defineProperty(vm, key, sharedPropery);
-}
-```
-computed里的每个key都有一个computed watcher;在new watcher的时候，执行了get方法，及对依赖值进行了取值，firstName，lastName，对这两个属性进行了取值，触发了get拦截，则收集了该watcher，但是这个watcher是computed watcher,不是渲染watcher，当firstName，lastName发生改变时，需要重新计算fullName，手机了该属性的computed watcher，则这个是没有问题的，但是页面却不会更新，因为没有收集到渲染watcher？
-如何处理呢？
-梳理下页面渲染逻辑：
-1. 页面在进行渲染时，创建了渲染watcher，此时可以把此watcher保存到一个数组中，同时对fullName进行了取值，则会生成一个computed watcher,依赖属性也收集了该watcher，同时判定一下数组是否还有watcher，有则收集改watcher，
-

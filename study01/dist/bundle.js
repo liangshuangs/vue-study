@@ -42,6 +42,55 @@
     return Constructor;
   }
 
+  function _defineProperty(obj, key, value) {
+    if (key in obj) {
+      Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+      });
+    } else {
+      obj[key] = value;
+    }
+
+    return obj;
+  }
+
+  function ownKeys(object, enumerableOnly) {
+    var keys = Object.keys(object);
+
+    if (Object.getOwnPropertySymbols) {
+      var symbols = Object.getOwnPropertySymbols(object);
+      if (enumerableOnly) symbols = symbols.filter(function (sym) {
+        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+      });
+      keys.push.apply(keys, symbols);
+    }
+
+    return keys;
+  }
+
+  function _objectSpread2(target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i] != null ? arguments[i] : {};
+
+      if (i % 2) {
+        ownKeys(Object(source), true).forEach(function (key) {
+          _defineProperty(target, key, source[key]);
+        });
+      } else if (Object.getOwnPropertyDescriptors) {
+        Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+      } else {
+        ownKeys(Object(source)).forEach(function (key) {
+          Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+        });
+      }
+    }
+
+    return target;
+  }
+
   function isFunction(object) {
     return typeof object === 'function';
   }
@@ -57,6 +106,54 @@
         vm[data][key] = newValue;
       }
     });
+  }
+  var strats = [];
+  var lifeCylesHooks = ['beforeCreate', 'created', 'beforeMounted', 'mounted'];
+  lifeCylesHooks.forEach(function (hook) {
+    strats[hook] = mergeCyles;
+  });
+  function mergeCyles(parentVal, childVal) {
+    if (childVal) {
+      if (parentVal) {
+        return parentVal.concat(childVal);
+      } else {
+        return [childVal];
+      }
+    } else {
+      return parentVal;
+    }
+  }
+  function mergeOptions(parent, child) {
+    var options = {};
+
+    for (var key in parent) {
+      mergeFild(key);
+    }
+
+    for (var _key in child) {
+      if (parent.hasOwnProperty(_key)) {
+        continue;
+      }
+
+      mergeFild(_key);
+    }
+
+    function mergeFild(key) {
+      var parentVal = parent[key];
+      var childVal = child[key];
+
+      if (strats[key]) {
+        options[key] = strats[key](parentVal, childVal);
+      } else {
+        if (isObject(parentVal) && isObject(childVal)) {
+          options[key] = _objectSpread2(_objectSpread2({}, parentVal), childVal);
+        } else {
+          options[key] = childVal;
+        }
+      }
+    }
+
+    return options; // 策略模式
   }
 
   var oldArrayMethods = Array.prototype;
@@ -706,6 +803,14 @@
 
     new Watcher(vm, updateComponent, function () {}, {}); // 每个组件渲染，都会创建一个对应的watcher,多个组件渲染就会创建多个watcher 
   }
+  function callHook(vm, hook) {
+    var handlers = vm.$options[hook];
+    if (!handlers) return;
+
+    for (var i = 0; i < handlers.length; i++) {
+      handlers[i].call(vm);
+    }
+  }
 
   function stateMixin(Vue) {
     Vue.prototype.$watch = function (key, cb, options) {
@@ -774,11 +879,15 @@
   function initMixin(Vue) {
     Vue.prototype._init = function (options) {
       var vm = this;
-      vm.$options = options;
+      vm.$options = mergeOptions(vm.constructor.options, options); // 创建之前
+
+      callHook(vm, 'beforeCreate');
 
       if (options.data) {
         initState(vm);
       }
+
+      callHook(vm, 'created');
 
       if (options.watch) {
         initWatch(vm, options.watch);
@@ -808,8 +917,10 @@
 
           vm.$options.render = render;
         }
-      } // 需要挂载这个组件 调用render 生成真是dom
+      } // 挂载之前
 
+
+      callHook(vm, 'beforeMounted'); // 需要挂载这个组件 调用render 生成真是dom
 
       mountComponent(vm);
     };
@@ -824,6 +935,15 @@
     };
   }
 
+  function initGlobalApi(Vue) {
+    Vue.options = {};
+
+    Vue.mixin = function (options) {
+      this.options = mergeOptions(this.options, options);
+      return this;
+    };
+  }
+
   function Vue(options) {
     this._init(options);
   }
@@ -832,6 +952,7 @@
   renderMixin(Vue);
   lifecyleMixin(Vue);
   stateMixin(Vue);
+  initGlobalApi(Vue);
 
   return Vue;
 

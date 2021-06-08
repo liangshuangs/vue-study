@@ -1,14 +1,19 @@
 import { initState } from './initState';
 import { complierToFunctions } from './complier';
-import { mountComponent } from './lifecyle';
+import { mountComponent, callHook } from './lifecyle';
 import { initWatch, initComputed } from './stateMixin';
+import { mergeOptions } from './utils';
 function initMixin(Vue) {
     Vue.prototype._init = function (options) {
         const vm = this;
-        vm.$options = options;
+
+        vm.$options = mergeOptions(vm.constructor.options, options);
+        // 创建之前
+        callHook(vm, 'beforeCreate');
         if (options.data) {
             initState(vm);
         }
+        callHook(vm, 'created');
         if (options.watch) {
             initWatch(vm, options.watch);
         }
@@ -32,6 +37,8 @@ function initMixin(Vue) {
                 vm.$options.render = render; 
             }
         }
+        // 挂载之前
+        callHook(vm, 'beforeMounted');
         // 需要挂载这个组件 调用render 生成真是dom
         mountComponent(vm, el);
     }

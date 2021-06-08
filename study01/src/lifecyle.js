@@ -27,3 +27,10 @@ export function mountComponent(vm, el) {
     // vm updateComponent：渲染函数，cb options
     new Watcher(vm, updateComponent, () => { }, {}); // 每个组件渲染，都会创建一个对应的watcher,多个组件渲染就会创建多个watcher 
 }
+export function callHook(vm, hook) {
+    let handlers = vm.$options[hook];
+    if (!handlers) return;
+    for (let i = 0; i < handlers.length; i++) {
+        handlers[i].call(vm);
+    }
+}

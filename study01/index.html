@@ -15,6 +15,22 @@
     <script src="dist/bundle.js"></script>
     <script>
         // options Api 通过一个选项进行配置
+        
+        Vue.mixin({
+            beforeCreate() {
+                console.log('beforeCreate-1')
+            }
+        })
+        Vue.mixin({
+            beforeCreate() {
+                console.log('beforeCreate-2')
+            }
+        })
+        Vue.mixin({
+            beforeCreate() {
+                console.log('beforeCreate-3')
+            }
+        })
         let vm = new Vue({
             el: '#app',
             data() {
@@ -27,20 +43,19 @@
                 fullName() {
                     return this.firstName + this.lastName;
                 },
-                // fullName: {
-                //     get() {
-                //         return this.firstName + this.lastName;
-                //     },
-                //     set(newVal) {
-                //         console.log('new', newVal)
-                //     }
-                // }
             },
-            // watch: {
-            //     name(newVal, oldVal) {
-            //         console.log(newVal,'newVal')
-            //     }
-            // },
+            beforeCreate() {
+                console.log('beforeCreate-4')
+            },
+            created() {
+                console.log('created')
+            },
+            beforeMounted() {
+                console.log('beforeMounted')
+            },
+            mounted() {
+                console.log('mounted')
+            }
         });
         setTimeout(() => {
            vm.firstName = 'wang'

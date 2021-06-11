@@ -1,17 +1,15 @@
-import { mergeOptions } from '../utils';
-export function initGlobalApi(Vue) {
-    Vue.options = {};
-    Vue.mixin = function (options) {
-        this.options = mergeOptions(this.options, options);
-        return this
-    }
-    /**
-     * @description: 挂载全局组件
-     * @param {*} id 组件ID
-     * @param {*} opts 组件参数
-     * @return {*} 返回一个构造函数
-     */
-    Vue.options._base = Vue;
+<!--
+ * @Description: 
+ * @Author: liangshuang15
+ * @Date: 2021-06-11 11:34:08
+ * @LastEditTime: 2021-06-11 11:45:09
+ * @LastEditors: Please set LastEditors
+ * @Reference: 
+-->
+# vue-component
+Vue.component是挂载全局组件 写到global-api中
+```
+Vue.options._base = Vue;
     Vue.options.components = {}; // Vue options上所有的参数都会和vue实例的options合并 vm.$options = mergeOptions(vm.constructor.options, options);
     Vue.component = function (id, opts) {
         // 为保证每个组件的独立，每个组件必须是一个单独的实例 那么这个组件必须要继承Vue上的属性和方法
@@ -29,4 +27,4 @@ export function initGlobalApi(Vue) {
         Sub.options = mergeOptions(Super.options, opts);
         return Sub;
     }
-}
+```

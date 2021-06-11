@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: liangshuang15
  * @Date: 2021-06-11 11:34:08
- * @LastEditTime: 2021-06-11 16:23:36
+ * @LastEditTime: 2021-06-11 16:35:08
  * @LastEditors: Please set LastEditors
  * @Reference: 
 -->
@@ -205,4 +205,4 @@ if (vm.$options.el) {
             vm.$mounted(vm.$options.el);
         }
 ```
-此时，因为子组件没有el,所以不会执行挂载，需要手动执行vm.$mounted();进行，重复上面的挂载流程，生成了真是dom,存放在了vm.$el上
+此时，因为子组件没有el,所以不会执行挂载，需要手动执行vm.$mounted();进行，重复上面的挂载流程，生成了真是dom,存放在了vm.$el上，子组件的真是还赋值给了vnode.instance，所以如果是组件渲染，返回的是vnode.instance

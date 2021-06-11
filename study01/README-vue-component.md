@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: liangshuang15
  * @Date: 2021-06-11 11:34:08
- * @LastEditTime: 2021-06-11 16:35:08
+ * @LastEditTime: 2021-06-11 16:46:37
  * @LastEditors: Please set LastEditors
  * @Reference: 
 -->
@@ -206,3 +206,26 @@ if (vm.$options.el) {
         }
 ```
 此时，因为子组件没有el,所以不会执行挂载，需要手动执行vm.$mounted();进行，重复上面的挂载流程，生成了真是dom,存放在了vm.$el上，子组件的真是还赋值给了vnode.instance，所以如果是组件渲染，返回的是vnode.instance
+
+总结：
+1：根据template生成一个render
+2：render 生成一个虚拟dom vnode
+3: createEl将vnode生成真是dom
+4: patch 将真是dom进行挂载到body上
+组件在进行挂载的时候，如果是子组件，那么子组件的vnode的data上面有一个init的方法，init方法就是Vue._init方法，就是组价的挂载方法
+在createEl方法里面，判断是data上面是否有init方法，有则执行，并返回true，执行并且$mounted，执行_update，
+vm.$el = patch(vm.$el, vnode);由于子组件，没有el，所以oldVnode是空，就直接返回createEl(vnode)，就是真是的dom
+```
+export function patch(oldVnode, vnode) {
+    if (!oldVnode) {
+        return createEl(vnode);
+    }
+    if (oldVnode.nodeType === 1) {
+        let parentEle = oldVnode.parentElement;
+        let newEl = createEl(vnode); // 将虚拟节点转成真是节点
+        parentEle.insertBefore(newEl, oldVnode);
+        parentEle.removeChild(oldVnode);
+        return newEl;
+    }
+}
+```

@@ -10,26 +10,14 @@
 <body>
     <div id="app" style="color:red;background: gren;">
         <span class="ab">测试</span>
-        {{firstName}}
+        <my-button></my-button>
     </div>
     <script src="dist/bundle.js"></script>
     <script>
         // options Api 通过一个选项进行配置
         
-        Vue.mixin({
-            beforeCreate() {
-                console.log('beforeCreate-1')
-            }
-        })
-        Vue.mixin({
-            beforeCreate() {
-                console.log('beforeCreate-2')
-            }
-        })
-        Vue.mixin({
-            beforeCreate() {
-                console.log('beforeCreate-3')
-            }
+        Vue.component('my-button', {
+            template: `<button>hello</button>`
         })
         let vm = new Vue({
             el: '#app',
@@ -39,27 +27,12 @@
                     lastName: 'ming'
                  }
             },
-            computed: {
-                fullName() {
-                    return this.firstName + this.lastName;
-                },
-            },
-            beforeCreate() {
-                console.log('beforeCreate-4')
-            },
-            created() {
-                console.log('created')
-            },
-            beforeMounted() {
-                console.log('beforeMounted')
-            },
-            mounted() {
-                console.log('mounted')
+            components: {
+                'my-button': {
+                    template: `<button>world</button>`
+                }
             }
         });
-        setTimeout(() => {
-           vm.firstName = 'wang'
-        }, 3000)
     </script>
 </body>
 

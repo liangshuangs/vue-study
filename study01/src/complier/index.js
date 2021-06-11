@@ -1,3 +1,11 @@
+/*
+ * @Description: 
+ * @Author: liangshuang15
+ * @Date: 2021-04-19 11:29:29
+ * @LastEditTime: 2021-06-11 15:45:00
+ * @LastEditors: Please set LastEditors
+ * @Reference: 
+ */
 import { parseHtml } from './parse';
 import { generate } from './generate';
 // 把模板转化成渲染函数

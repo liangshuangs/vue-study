@@ -1,0 +1,47 @@
+<!--
+ * @Description: 
+ * @Author: liangshuang15
+ * @Date: 2021-06-11 11:31:22
+ * @LastEditTime: 2021-06-11 16:25:06
+ * @LastEditors: 
+ * @Reference: 
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app" style="color:red;background: gren;">
+        <span class="ab">测试</span>
+        <my-button></my-button>
+    </div>
+    <script src="dist/bundle.js"></script>
+    <script>
+        // options Api 通过一个选项进行配置
+        
+        Vue.component('my-button', {
+            template: `<button>hello</button>`
+        })
+        let vm = new Vue({
+            el: '#app',
+            data() {
+                return {
+                    firstName: 'li',
+                    lastName: 'ming'
+                 }
+            },
+            components: {
+                'my-button': {
+                    template: `<button>world</button>`
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

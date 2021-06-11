@@ -33,9 +33,9 @@ function initMixin(Vue) {
             let template = options.template;
             if (!template && el) {
                 template = el.outerHTML;
-                const render = complierToFunctions(template);  // 将模板编译成渲染函数
-                vm.$options.render = render; 
             }
+            const render = complierToFunctions(template);  // 将模板编译成渲染函数
+            vm.$options.render = render; 
         }
         // 挂载之前
         callHook(vm, 'beforeMounted');

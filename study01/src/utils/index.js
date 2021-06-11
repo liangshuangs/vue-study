@@ -19,6 +19,13 @@ let lifeCylesHooks = ['beforeCreate', 'created', 'beforeMounted', 'mounted'];
 lifeCylesHooks.forEach(hook => {
     strats[hook] = mergeCyles
 })
+strats.components = function (parentVal, childVal) {
+    let options = Object.create(parentVal);
+    for (let key in childVal) {
+        options[key] = childVal[key];
+    }
+    return options;
+}
 export function mergeCyles(parentVal, childVal) {
     if (childVal) {
         if (parentVal) {
@@ -51,10 +58,14 @@ export function mergeOptions(parent, child) {
             if (isObject(parentVal) && isObject(childVal)) {
                 options[key] = { ...parentVal, ...childVal };
             } else {
-                options[key] = childVal;
+                options[key] = childVal || parentVal;
             }
         }
     }
     return options;
     // 策略模式
+}
+export function isReservedTag(tag) {
+    let reservedTag = 'span,div,button,i,ul,li,a';
+    return reservedTag.includes(tag);
 }

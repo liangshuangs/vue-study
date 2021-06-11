@@ -1,3 +1,11 @@
+/*
+ * @Description: 
+ * @Author: liangshuang15
+ * @Date: 2021-06-11 11:30:35
+ * @LastEditTime: 2021-06-11 16:15:10
+ * @LastEditors: Please set LastEditors
+ * @Reference: 
+ */
 import { patch, createElement, createTextElement } from './vdom/index';
 import Watcher from './obverse/watcher';
 export function lifecyleMixin(Vue) {

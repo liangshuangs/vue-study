@@ -1,8 +1,16 @@
+/*
+ * @Description: 
+ * @Author: liangshuang15
+ * @Date: 2021-04-26 19:31:17
+ * @LastEditTime: 2021-06-11 15:42:11
+ * @LastEditors: Please set LastEditors
+ * @Reference: 
+ */
 const defaultTagRE = /\{\{((?:.|\r?\n)+?)\}\}/g; // {{aaaa}}
 
 function genProps(el) {
     let attrs = el.attrs;
-    if (!attrs.length) return `'undefined'`;
+    if (!attrs.length) return `undefined`;
     let str = '';
     for (let i = 0; i < attrs.length; i++) {
         let attr = attrs[i];

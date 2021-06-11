@@ -14,6 +14,8 @@ const startTagClose = /^\s*(\/?)>/; // 匹配标签结束的 >    >   <div></div
 const defaultTagRE = /\{\{((?:.|\r?\n)+?)\}\}/g; // {{aaaa}}
 
 export function parseHtml(html) { // <div id="app">test</div>
+    let root = null; // 根元素
+    let stack = [];
     // 向前推进
     function advance(len) {
         html = html.substring(len);
@@ -52,35 +54,7 @@ export function parseHtml(html) { // <div id="app">test</div>
         }
         return false;
     }
-    while (html) {
-        let tagEnd = html.indexOf('<');
-        if (tagEnd === 0) { // 如果是开始的位置 可能是开始标签 也有可能是结束标签
-            const startTagMatch = parseStartTag();
-            // 匹配的是开始标签
-            if (startTagMatch) {
-                parseStart(startTagMatch.tagName, startTagMatch.attrs);
-                continue;
-            }
-            // 匹配的是结束标签 </div>
-            const endTagMatch = parseEndTag();
-            if (endTagMatch) {
-                parseEnd(endTagMatch.tagName);
-                continue;
-            }
-        }
-        let text;
-        if (tagEnd > 0) {
-            text = html.substring(0, tagEnd);
-            chars(text);
-            advance(text.length);
-            continue;
-        }
-    }
-    return root;
-}
-let root = null; // 根元素
-let stack = [];
-// 构建ast语法树
+    // 构建ast语法树
 function createAstElement(tagName, attrs) {
     return {
         tag: tagName,
@@ -117,3 +91,29 @@ function chars(text) {
         text: text
     });
 };
+    while (html) {
+        let tagEnd = html.indexOf('<');
+        if (tagEnd === 0) { // 如果是开始的位置 可能是开始标签 也有可能是结束标签
+            const startTagMatch = parseStartTag();
+            // 匹配的是开始标签
+            if (startTagMatch) {
+                parseStart(startTagMatch.tagName, startTagMatch.attrs);
+                continue;
+            }
+            // 匹配的是结束标签 </div>
+            const endTagMatch = parseEndTag();
+            if (endTagMatch) {
+                parseEnd(endTagMatch.tagName);
+                continue;
+            }
+        }
+        let text;
+        if (tagEnd > 0) {
+            text = html.substring(0, tagEnd);
+            chars(text);
+            advance(text.length);
+            continue;
+        }
+    }
+    return root;
+}

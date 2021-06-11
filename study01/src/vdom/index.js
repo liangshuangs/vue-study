@@ -2,21 +2,69 @@
  * @Description: 
  * @Author: liangshuang15
  * @Date: 2021-06-11 11:30:35
- * @LastEditTime: 2021-06-11 16:20:04
+ * @LastEditTime: 2021-06-11 19:29:26
  * @LastEditors: Please set LastEditors
  * @Reference: 
  */
-import { isReservedTag, isObject } from '../utils';
+import {
+    isReservedTag,
+    isObject
+} from '../utils';
 export function patch(oldVnode, vnode) {
+    // 如果是子组件渲染，没有el就没有oldVnode，直接返回真是dom就行，不要进行insertBefore到body上
     if (!oldVnode) {
         return createEl(vnode);
     }
+    //nodeType= 1为真实的dom
     if (oldVnode.nodeType === 1) {
         let parentEle = oldVnode.parentElement;
         let newEl = createEl(vnode); // 将虚拟节点转成真是节点
         parentEle.insertBefore(newEl, oldVnode);
         parentEle.removeChild(oldVnode);
         return newEl;
+    } else {
+        console.log(oldVnode, vnode, 'node----')
+        let el = oldVnode.el;
+        let oldChildren = oldVnode.children || [];
+        let newChildren = vnode.children || [];
+        // diff 标签不一样，直接替换
+        if (oldVnode.tag === undefined) {
+            if (oldVnode.text !== vnode.text) {
+                el.textConent = vnode.text;
+                return el;
+            }
+        }
+        if (oldVnode.tag !== vnode.tag) {
+            // oldVnode.el存放这真是的dom
+            let newDom = createEl(vnode);
+            el.parentElement.replaceChild(newDom, oldVnode.el);
+        } else if (oldChildren.length > 0 && newChildren.length > 0) {
+            console.log('ddd')
+        } else if (oldChildren.length > 0) {
+            // 老的节点有子节点 新的没有子节点
+            el.innerHTML = '';
+
+
+        } else if (newChildren.length > 0) {
+            // 新的有子节点，老的没有
+            for (let i = 0; i < newChildren.length; i++) {
+                let child = newChildren[i];
+                el.appendChild(createEl(child));
+            }
+        }
+    }
+}
+// patch 属性
+export function patchProps(vnode, oldPorps) {
+    let props = vnode.data || {};
+    for (let key in props) {
+        if (key === 'style') {
+            for (let styleName in props[key]) {
+                vnode.el.style[styleName] = props[key][styleName]
+            }
+        } else {
+            vnode.el && vnode.el.setAttribute(key, props[key]);
+        }
     }
 }
 /**
@@ -37,7 +85,7 @@ export function createElement(vm, tag, data = {}, ...children) {
     //return vnode(vm, tag, data,vm.key, children, undefined);
     // 是否是原生的标签
     if (isReservedTag(tag)) {
-        return vnode(vm, tag, data,vm.key, children, undefined);
+        return vnode(vm, tag, data, vm.key, children, undefined);
     } else {
         //将保持在vm.$options.components的对应的组件取出来
         let subComponent = vm.$options.components[tag];
@@ -52,18 +100,23 @@ export function createComponent(vm, tag, data, key, Cotr) {
         Cotr = vm.$options._base.extend(Cotr);
         data.hook = {
             init(vnode) {
-                let child = new Cotr({isComponent: true}); // 挂载子组件，new Cotr就会执行_init()方法
+                let child = new Cotr({
+                    isComponent: true
+                }); // 挂载子组件，new Cotr就会执行_init()方法
                 child.$mounted();
                 vnode.instance = child.$el;
             }
         }
     };
-    return vnode(vm, tag, data, key,undefined,undefined, {Cotr})   
+    return vnode(vm, tag, data, key, undefined, undefined, {
+        Cotr
+    })
 }
 export function createTextElement(vm, text) {
-    return vnode(vm, undefined, undefined,undefined, undefined, text);
+    return vnode(vm, undefined, undefined, undefined, undefined, text);
 }
-function vnode(vm, tag, data, key, children, text,Cotr ) {
+
+function vnode(vm, tag, data, key, children, text, Cotr) {
     return {
         vm,
         tag,
@@ -74,13 +127,25 @@ function vnode(vm, tag, data, key, children, text,Cotr ) {
         Cotr
     }
 }
-function createEl(vnode) {
-    let { tag, data = {}, children,text } = vnode;
+// 
+/**
+ * @description: 生成真是的节点
+ * @param {*} vnode 虚拟dom
+ * @return {*}
+ */
+export function createEl(vnode) {
+    let {
+        tag,
+        data = {},
+        children,
+        text
+    } = vnode;
     if (typeof tag === 'string') {
-        if(createComponentEl(vnode)) {
+        if (createComponentEl(vnode)) {
             return vnode.instance;
         }
         vnode.el = document.createElement(tag);
+        patchProps(vnode);
     } else {
         vnode.el = document.createTextNode(text);
     }
@@ -89,6 +154,7 @@ function createEl(vnode) {
     });
     return vnode.el;
 }
+
 function createComponentEl(vnode) {
     let i = vnode.data;
     if ((i = i.hook) && (i = i.init)) {

@@ -1,3 +1,11 @@
+/*
+ * @Description: 
+ * @Author: liangshuang15
+ * @Date: 2021-05-28 15:37:25
+ * @LastEditTime: 2021-06-11 17:33:13
+ * @LastEditors: Please set LastEditors
+ * @Reference: 
+ */
 import { pushTarget, popTarget, Dep } from './dep';
 import { queueWatcher } from './schedular';
 let id = 0;
@@ -23,9 +31,9 @@ class Watcher {
         // 默认会渲染一次组件 因为第一次new组件时，需要挂载组件
         this.value = !this.lanzy && this.get(); // 第一次渲染的值 即 旧值 computed watcher 第一次渲染不会进行取值
     }
-    get() {
+    get(upate) {
         pushTarget(this);
-        let value = this.getter.call(this.vm); // 即调用 vm._update(vm._render());会触发取vm的上的值的方法 
+        let value = this.getter.call(this.vm, upate); // 即调用 vm._update(vm._render());会触发取vm的上的值的方法 
         popTarget();
         //stack 1:渲染watcher 2：computed watcher popTarget之后，Dep.target就是渲染watcher了
         if (Dep.target) {
@@ -49,7 +57,8 @@ class Watcher {
     // watch 更新
     run() {
         // 更新时
-        let newValue = this.get();
+        this.vm.oldNode = this.vm.Node;
+        let newValue = this.get('update');
         let oldValue = this.value;
         this.value = newValue;
         if (this.user) {

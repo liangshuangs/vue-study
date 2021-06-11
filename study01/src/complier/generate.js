@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: liangshuang15
  * @Date: 2021-04-26 19:31:17
- * @LastEditTime: 2021-06-11 15:42:11
+ * @LastEditTime: 2021-06-11 17:47:39
  * @LastEditors: Please set LastEditors
  * @Reference: 
  */
@@ -20,6 +20,7 @@ function genProps(el) {
                 styleObj[arguments[1]] = arguments[2];
             })
             attr.value = styleObj;
+            console.log(styleObj,'styleObj')
         }
         str += `${attr.tagName}: ${JSON.stringify(attr.value)},`;
     }

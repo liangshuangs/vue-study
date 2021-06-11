@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: liangshuang15
  * @Date: 2021-06-11 11:30:35
- * @LastEditTime: 2021-06-11 16:15:10
+ * @LastEditTime: 2021-06-11 17:34:22
  * @LastEditors: Please set LastEditors
  * @Reference: 
  */
@@ -18,15 +18,19 @@ export function lifecyleMixin(Vue) {
     Vue.prototype._s = function (val) {
         return JSON.stringify(val);
     }
-    Vue.prototype._update = function (vnode) {
+    Vue.prototype._update = function (vnode, update) {
         let vm = this;
-        vm.$el = patch(vm.$el, vnode);
+        if (update) {
+            vm.$el = patch(vm.oldNode, vnode);
+        } else {
+            vm.$el = patch(vm.$el, vnode);
+        }
     }
 }
 // 每次每一个组件渲染就会创建一个watcher的实例
-export function mountComponent(vm, el) {
-    let updateComponent = function () {
-        vm._update(vm._render());
+export function mountComponent(vm) {
+    let updateComponent = function (update) {
+        vm._update(vm._render(), update);
     }
     // 挂载前
     //updateComponent();

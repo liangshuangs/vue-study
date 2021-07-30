@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: liangshuang15
  * @Date: 2021-05-28 15:37:25
- * @LastEditTime: 2021-06-11 17:33:13
+ * @LastEditTime: 2021-07-29 11:26:52
  * @LastEditors: Please set LastEditors
  * @Reference: 
  */
@@ -32,7 +32,7 @@ class Watcher {
         this.value = !this.lanzy && this.get(); // 第一次渲染的值 即 旧值 computed watcher 第一次渲染不会进行取值
     }
     get(upate) {
-        pushTarget(this);
+        pushTarget(this); // Dep.target = this this 就是watcher实例
         let value = this.getter.call(this.vm, upate); // 即调用 vm._update(vm._render());会触发取vm的上的值的方法 
         popTarget();
         //stack 1:渲染watcher 2：computed watcher popTarget之后，Dep.target就是渲染watcher了

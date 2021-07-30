@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: liangshuang15
  * @Date: 2021-06-11 11:30:35
- * @LastEditTime: 2021-06-11 19:29:26
+ * @LastEditTime: 2021-07-29 11:27:13
  * @LastEditors: Please set LastEditors
  * @Reference: 
  */
@@ -23,35 +23,38 @@ export function patch(oldVnode, vnode) {
         parentEle.removeChild(oldVnode);
         return newEl;
     } else {
-        console.log(oldVnode, vnode, 'node----')
         let el = oldVnode.el;
-        let oldChildren = oldVnode.children || [];
-        let newChildren = vnode.children || [];
-        // diff 标签不一样，直接替换
-        if (oldVnode.tag === undefined) {
-            if (oldVnode.text !== vnode.text) {
-                el.textConent = vnode.text;
-                return el;
-            }
-        }
-        if (oldVnode.tag !== vnode.tag) {
-            // oldVnode.el存放这真是的dom
-            let newDom = createEl(vnode);
-            el.parentElement.replaceChild(newDom, oldVnode.el);
-        } else if (oldChildren.length > 0 && newChildren.length > 0) {
-            console.log('ddd')
-        } else if (oldChildren.length > 0) {
-            // 老的节点有子节点 新的没有子节点
-            el.innerHTML = '';
+        let newDom = createEl(vnode);
+        el.parentElement.replaceChild(newDom, oldVnode.el);
+        return;
+        // let el = oldVnode.el;
+        // let oldChildren = oldVnode.children || [];
+        // let newChildren = vnode.children || [];
+        // // diff 标签不一样，直接替换
+        // if (oldVnode.tag === undefined) {
+        //     if (oldVnode.text !== vnode.text) {
+        //         el.textConent = vnode.text;
+        //         return el;
+        //     }
+        // }
+        // if (oldVnode.tag !== vnode.tag) {
+        //     // oldVnode.el存放这真是的dom
+        //     let newDom = createEl(vnode);
+        //     el.parentElement.replaceChild(newDom, oldVnode.el);
+        // } else if (oldChildren.length > 0 && newChildren.length > 0) {
+        //     // 双方都有子节点 采用双指针的方法
+        // } else if (oldChildren.length > 0) {
+        //     // 老的节点有子节点 新的没有子节点
+        //     el.innerHTML = '';
 
 
-        } else if (newChildren.length > 0) {
-            // 新的有子节点，老的没有
-            for (let i = 0; i < newChildren.length; i++) {
-                let child = newChildren[i];
-                el.appendChild(createEl(child));
-            }
-        }
+        // } else if (newChildren.length > 0) {
+        //     // 新的有子节点，老的没有
+        //     for (let i = 0; i < newChildren.length; i++) {
+        //         let child = newChildren[i];
+        //         el.appendChild(createEl(child));
+        //     }
+        // }
     }
 }
 // patch 属性

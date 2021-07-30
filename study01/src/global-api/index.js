@@ -1,9 +1,10 @@
 import { mergeOptions } from '../utils';
+import { initUse } from './use';
 export function initGlobalApi(Vue) {
     Vue.options = {};
     Vue.mixin = function (options) {
         this.options = mergeOptions(this.options, options);
-        return this
+        return this;
     }
     /**
      * @description: 挂载全局组件
@@ -29,4 +30,5 @@ export function initGlobalApi(Vue) {
         Sub.options = mergeOptions(Super.options, opts);
         return Sub;
     }
+    initUse(Vue);
 }

@@ -31,6 +31,12 @@ config                          github-rsa.pub                  id_rsa.liangshua
 执行命令1：ssh-add ~/.ssh/id_rsa.liangshuang15
 执行命令2：ssh-add ~/.ssh/github-rsa
 
+执行 vi github-rsa.pub 复制里面的内容
+
+去到git 
+
+setting 中找到 ssh key 添加ssh 即可，保存
+
 第四步：创建一个config(有则打开，无则创建（touch ~/config)在ssh目录下创建
 
 config 

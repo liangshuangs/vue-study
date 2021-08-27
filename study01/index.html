@@ -10,22 +10,28 @@
 <body>
     <div id="app" style="color:red;background: gren;">
         <span class="ab">测试</span>
-        年龄：{{$store.state.age}}
+        名称：{{$store.state.name}}
+        <div>
+        通过getter获取名称：{{$store.getters.myName}}
+        </div>
+        <div>
+            <button id="name">修改名称</button>
+        </div>
+        <div>
+            <button id="name1">异步修改名称</button>
+        </div>
     </div>
     <script src="dist/bundle.js"></script>
     <script>
         let vm = Vue.vm;
-        // <div>
-        //     index的name:{{$store.state.index.name}}
-        // </div>
-        // setTimeout(() => {
-        //     vm.$store.commit('changeAge',20)
-        // }, 1000);
-        // setTimeout(() => {
-        //     vm.$store.dispatch('handleAge',40)
-        // }, 1000)
-        
-        
+        let nameDom = document.getElementById('name');
+        nameDom.addEventListener('click', () => {
+            vm.$store.commit('changeName', '我由小明改成晓东')
+        }, false);
+        let name1Dom = document.getElementById('name1');
+        name1Dom.addEventListener('click', () => {
+            vm.$store.dispatch('handleName', '我异步修改名字拉')
+        }, false);
     </script>
 </body>
 

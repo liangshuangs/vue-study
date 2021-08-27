@@ -3,51 +3,24 @@ import Vuex from '../vuex';
 Vue.use(Vuex);
 let store = new Vuex.Store({
     state: {
-        age: 12
+        name: '我是小明'
     },
     getters: {
-        myAge(state) {
-            return state.age + 10
+        myName(state) {
+            return state.name
         }
     },
     mutations: { // method  commit 同步更改状态
-        changeAge(state, payload) {
-            state.age += payload
+        changeName(state, payload) {
+            state.name = payload
         }
     },
     actions: {
         // 异步操作
-        handleAge(vm, payload) {
+        handleName(vm, payload) {
             setTimeout(() => {
-                vm.commit('changeAge', payload)
+                vm.commit('changeName', payload)
             },3000)
-        }
-    },
-    modules: {
-        index: {
-            namespaced: true,
-            state: {
-                name: 'index'
-            },
-            getters: {
-                myName(state) {
-                    return state.name + '1'
-                }
-            },
-            modules: {
-                c: {
-                    namespaced: true,
-                    state: {
-                        age: 100
-                    },
-                }
-            }
-        },
-        home: {
-            namespaced: true,
-            state: {
-                name: 'home'
-            }
         }
     }
 })

@@ -1,5 +1,6 @@
 import { mergeOptions } from '../utils';
 import { initUse } from './use';
+import { set } from '../obverse/index';
 export function initGlobalApi(Vue) {
     Vue.options = {};
     Vue.mixin = function (options) {
@@ -30,5 +31,6 @@ export function initGlobalApi(Vue) {
         Sub.options = mergeOptions(Super.options, opts);
         return Sub;
     }
+    Vue.set = set;
     initUse(Vue);
 }

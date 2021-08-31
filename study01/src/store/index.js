@@ -1,7 +1,11 @@
 import Vue from '../index';
-import Vuex from '../vuex';
+// import Vuex from '../vuex';
+import Vuex from '../vuex/index-module';
+import Home from './home';
+import Order from './order';
 Vue.use(Vuex);
 let store = new Vuex.Store({
+    namespaced: true,
     state: {
         name: '我是小明'
     },
@@ -22,6 +26,10 @@ let store = new Vuex.Store({
                 vm.commit('changeName', payload)
             },3000)
         }
+    },
+    modules: {
+        home: Home,
+        order: Order
     }
 })
 export default store;

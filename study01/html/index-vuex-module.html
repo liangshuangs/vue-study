@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app" style="color:red;background: gren;">
+        <span class="ab">测试</span>
+        模块home名称：{{$store.state.home.name}}
+        <div>
+        <div>
+        模块order名称：{{$store.state.order.name}}
+        </div>
+        <div>
+        模块 sub order名称：{{$store.state.order.subOrder.name}}
+        </div>
+        <div>
+            通过getter获取名称：{{$store.getters['order/subOrder/mySubOrderName']}}
+        </div>
+
+        通过getter获取名称：{{$store.getters['order/myOrderName']}}
+        </div>
+        <div>
+            <button id="name">修改模块home名称</button>
+        </div>
+        <div>
+            <button id="name1">异步修改名称</button>
+        </div>
+    </div>
+    <script src="dist/bundle.js"></script>
+    <script>
+        let vm = Vue.vm;
+        let nameDom = document.getElementById('name');
+        console.log(vm.$store,'vm.$store')
+        nameDom.addEventListener('click', () => {
+            console.log('click')
+            vm.$store.commit('order/changeOrderName', '模块order 名字改为 new order')
+        }, false);
+        let name1Dom = document.getElementById('name1');
+        name1Dom.addEventListener('click', () => {
+            vm.$store.dispatch('order/handleOrderName', '我异步修改 order 名字')
+        }, false);
+    </script>
+</body>
+
+</html>

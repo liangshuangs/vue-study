@@ -1,16 +1,17 @@
 {
-  "private": true,
-  "workpaces": [
-    "packages/&"
-  ],
-  "scripts": {
-    "dev": "node script/dev.js",
-    "build": "node script/build.js"
-  },
-  "name": "study-vue3",
+  "name": "@vue/reactivity",
   "version": "1.0.0",
   "main": "index.js",
+  "module": "dist/reactivity.esm-bundler.js",
   "license": "MIT",
+  "buildOptions": {
+    "name": "VueReactivity",
+    "formats": [
+      "cjs",
+      "esm-bundler",
+      "global"
+    ]
+  },
   "dependencies": {
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^13.0.5",

@@ -1,0 +1,1 @@
+(()=>{"use strict";console.log("title"),console.log("entry1","title")})();
